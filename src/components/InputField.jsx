@@ -1,0 +1,61 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import eyeClose from "../assets/images/login-close-eye.png";
+import eyeOpen from "../assets/images/login-open-eye.png";
+
+
+function InputField({
+    name,
+    heading,
+    placeholder,
+    rightIcon,
+    type = "text",
+    alt,
+    required,
+    onChange,
+    disabled,
+    value,
+    passwordIcon,
+    showIcon,
+    error,
+    multiple
+}) {
+    // const error = useSelector((state) => state.error.errors[name]);
+    const [showPassword, setShowPassword] = useState(false)
+
+    const handleShowPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
+    return (
+        <div>
+            <div className="login-email-container">
+                <p>{heading}</p>
+                <input
+                    name={name}
+                    type={passwordIcon ? showPassword ? "text" : "password" : type}
+                    placeholder={placeholder}
+                    required={required}
+                    onChange={onChange}
+                    disabled={disabled}
+                    className={rightIcon ? "" : "input-without-icon"}
+                    value={value}
+                    multiple={multiple}
+                />
+                {
+                    showIcon && (
+                        <button type="button"
+                            disabled={passwordIcon ? false : true}
+                            onClick={handleShowPassword}
+                        >
+                            <img src={passwordIcon ? showPassword ? eyeOpen : eyeClose : rightIcon} alt={alt} />
+                        </button>
+                    )
+                }
+            </div>
+            {error && <p className="error">{error}</p>}
+        </div>
+    )
+}
+
+export default InputField
