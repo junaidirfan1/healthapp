@@ -40,7 +40,9 @@ export const endpoints = {
 
     },
     Company: {
-        GetCompanyListByAdmin: "Company/GetCompanyListByAdmin"
+        GetCompanyListByAdmin: "Company/GetCompanyListByAdmin",
+        CreateCompany: "Company/CreateCompany",
+        GetCompanyDetail: "Company/GetCompanyDetail"
     }
 };
 

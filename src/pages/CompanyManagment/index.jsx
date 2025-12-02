@@ -39,11 +39,10 @@ const tableHead = [
 
 
 function CompanyManagment() {
-    const [searchData, setSearchData] = useState("");
     const navigate = useNavigate();
 
-    const handleCompanyDetail = (item) => {
-        navigate("/CompanyRegistraion", { state: { item } })
+    const handleCompanyDetail = () => {
+        navigate("/CompanyRegistraion");
     }
 
     const [getCompanies, { data: getCompaniesData }] = usePostMutation()

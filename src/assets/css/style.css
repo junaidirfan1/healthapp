@@ -288,7 +288,11 @@ body {
 .login-btn-container button:focus {
     outline: none;
 }
-
+.policy-details-row{
+    display: flex;
+   justify-content: flex-start;
+   gap: 20px;
+}
 .dont-have p {
     font-size: var(--base-font-size-18px);
     font-weight: 500;
