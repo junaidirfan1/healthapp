@@ -32,7 +32,9 @@ export const endpoints = {
         GetBenefitTypeList: "Benefit/GetBenefitTypeList",
         CreateBenefitByAdmin: "Benefit/CreateBenefitByAdmin",
         DeleteBenefitsByAdmin: "Benefit/DeleteBenefitsByAdmin",
-        UpdateBenefitByAdmin: "Benefit/UpdateBenefitByAdmin"
+        UpdateBenefitByAdmin: "Benefit/UpdateBenefitByAdmin",
+        GetPolicyList: "Benefit/GetPolicyList",
+        GetBenefitsByType: "Benefit/GetBenefitsByType",
     },
     PriorApproval: {
         GetAllPriorApprovalByAdmin: "PriorApproval/GetAllPriorApprovalByAdmin",
@@ -40,9 +42,12 @@ export const endpoints = {
 
     },
     Company: {
-        GetCompanyListByAdmin: "Company/GetCompanyListByAdmin",
         CreateCompany: "Company/CreateCompany",
-        GetCompanyDetail: "Company/GetCompanyDetail"
+        UpdateCompanyDetail: "Company/UpdateCompanyDetail",
+        GetCompanyListByAdmin: "Company/GetCompanyListByAdmin",
+        CompanyStatusUpdateByAdmin :"Company/CompanyStatusUpdateByAdmin",
+        GetCompanyDetail:"Company/GetCompanyDetail",
+        GetCompanyClientCode: "Company/GetCompanyClientCode"
     }
 };
 

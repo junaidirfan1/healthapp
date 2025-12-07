@@ -18,7 +18,8 @@ function InputField({
     passwordIcon,
     showIcon,
     error,
-    multiple
+    multiple,
+    inputContainerClass
 }) {
     // const error = useSelector((state) => state.error.errors[name]);
     const [showPassword, setShowPassword] = useState(false)
@@ -29,7 +30,7 @@ function InputField({
 
     return (
         <div>
-            <div className="login-email-container">
+            <div className={`login-email-container ${inputContainerClass}`}>
                 <p>{heading}</p>
                 <input
                     name={name}
@@ -38,7 +39,9 @@ function InputField({
                     required={required}
                     onChange={onChange}
                     disabled={disabled}
-                    className={rightIcon ? "" : "input-without-icon"}
+                   className={`${
+    rightIcon ? "" : "input-without-icon"
+  } ${disabled ? "input-disabled" : ""}`}
                     value={value}
                     multiple={multiple}
                 />

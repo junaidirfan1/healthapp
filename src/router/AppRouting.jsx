@@ -77,10 +77,10 @@ import HospitalizationBenefits from '../pages/HospitalizationBenefits';
 import MaternityBenefits from '../pages/MaternityBenefits';
 import AddHospital from '../pages/AddHospital';
 import AddBenefits from '../pages/AddBenefits';
-import CompanyRegistraion from '../pages/CompanyRegistraion';
 import EmployeeDetail from '../pages/EmployeeDetail';
 import UserRights from '../pages/UserRights';
 import CreateUser from '../pages/CreateUser';
+import CompanyRegistration from '../pages/CompanyManagment/CompanyRegistration';
 
 
 function AppRouting() {
@@ -106,10 +106,12 @@ function AppRouting() {
                                 <Route exact path="/PriorApprovals" element={<PriorApprovals />} />
                                 <Route exact path="/AddHospital" element={<AddHospital />} />
                                 <Route exact path="/AddBenefits" element={<AddBenefits />} />
-                                <Route exact path="/CompanyRegistraion" element={<CompanyRegistraion />} />
+                               <Route exact path='/CompanyManagment/CompanyRegistration' element={<CompanyRegistration/>} />
                                 <Route exact path="/EmployeeDetail" element={<EmployeeDetail />} />
                                 <Route exact path="/UserRights" element={<UserRights />} />
                                 <Route exact path="/CreateUser" element={<CreateUser />} />
+                                <Route path="*" element={<div>Page not found</div>} />
+
                             </Routes>
                         </div>
                         <Footer />
