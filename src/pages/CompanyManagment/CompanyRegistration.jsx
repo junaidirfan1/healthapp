@@ -771,7 +771,7 @@
 
 // export default CompanyRegistraion;
 
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import switchOn from "../../assets/images/switch-on.svg";
 import switchOff from "../../assets/images/switch-off.svg";
@@ -790,18 +790,12 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import SelectStyle from "../../utils/SelectStyle";
 
-
 function CompanyRegistration() {
   const location = useLocation();
   const navigate = useNavigate();
 
-
-
   const updateCompany = location.state?.updateCompany || null;
 
-  console.log("object", updateCompany);
-
-  
   const [policy, setPolicy] = useState(null);
   const [client, setClient] = useState(null);
   const [benefitsTypeOptions, setBenefitsTypeOptions] = useState([]);
@@ -855,14 +849,11 @@ function CompanyRegistration() {
         data: `"${apiData.policyNumber}"`,
       });
 
-      // Check if API returned data
       if (!res?.data?.data) {
         toast.error("Policy Number not found");
         setPolicy(null);
         return;
       }
-
-      // Set company data
       setPolicy(res.data.data);
       console.log("Company Data:", res.data);
 
@@ -878,12 +869,46 @@ function CompanyRegistration() {
     }
   };
 
+  // ------------------ Client Code ------------------
+
+  const { data: clientCodes } = useGetQuery(
+    endpoints.Company.GetCompanyClientCode
+  );
+  const clientCodeOptions = useMemo(
+    () =>
+      clientCodes?.data?.map((code) => ({
+        value: code,
+        label: code,
+      })) || [],
+    [clientCodes]
+  );
+
+  const Addclient = () => {
+    if (!client) {
+      toast.error("Please select a Client Code");
+      return;
+    }
+
+    if (apiData.clientCode) {
+      toast.error("Only one Client Code allowed");
+      return;
+    }
+
+    setterForApiData("clientCode", client.value);
+
+    setClient(null);
+  };
+
+  const removeClientCode = (index) => {
+    const updated = apiData.clientCode.filter((_, i) => i !== index);
+    setterForApiData("clientCode", updated);
+  };
   // ------------------ Contact Persons ------------------
   const Addcontact = (e) => {
     e.preventDefault();
     const { name, contactNumber, emailAddress } = apiData;
-    if (apiData.contactPersons.length >= 5) {
-      toast.error("You can add only 5 contact persons!");
+    if (apiData.contactPersons.length >= 4) {
+      toast.error("You can add only 4 contact persons!");
       return;
     }
     if (!name || !contactNumber || !emailAddress) {
@@ -902,6 +927,17 @@ function CompanyRegistration() {
   };
 
   // ------------------ Policies ------------------
+
+  const { data: policyType } = useGetQuery(endpoints.Benefits.GetPolicyList);
+  const policyTypeOptions = useMemo(
+    () =>
+      policyType?.data
+        ?.map((type) => type.policyType)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map((type) => ({ value: type, label: type })) || [],
+    [policyType]
+  );
+
   const Addpolicies = (e) => {
     e.preventDefault();
     const { policyNumber, policyType } = apiData;
@@ -917,7 +953,7 @@ function CompanyRegistration() {
       toast.error("Please enter policy number!");
       return;
     }
-       if (!policyType) {
+    if (!policyType) {
       toast.error("Please enter policy type!");
       return;
     }
@@ -962,16 +998,6 @@ function CompanyRegistration() {
     setterForApiData("companyBenefits", updated);
   };
 
-  const { data: policyType } = useGetQuery(endpoints.Benefits.GetPolicyList);
-  const policyTypeOptions = useMemo(
-    () =>
-      policyType?.data
-        ?.map((type) => type.policyType)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .map((type) => ({ value: type, label: type })) || [],
-    [policyType]
-  );
-
   const fetchBenefits = async (policyType) => {
     if (!policyType) return;
     try {
@@ -993,68 +1019,28 @@ function CompanyRegistration() {
     }
   };
 
-  const { data: clientCodes } = useGetQuery(
-    endpoints.Company.GetCompanyClientCode
-  );
-  const clientCodeOptions = useMemo(
-    () =>
-      clientCodes?.data?.map((code) => ({
-        value: code,
-        label: code,
-      })) || [],
-    [clientCodes]
-  );
-
-  const Addclient = () => {
-    if (!client) {
-      toast.error("Please select a Client Code");
-      return;
-    }
-
-    if (apiData.clientCode) {
-      toast.error("Only one Client Code allowed");
-      return;
-    }
-
-    setterForApiData("clientCode", client.value);
-
-    setClient(null);
-  };
-
-  const removeClientCode = (index) => {
-    const updated = apiData.clientCode.filter((_, i) => i !== index);
-    setterForApiData("clientCode", updated);
-  };
-
   const [debugPayload, setDebugPayload] = useState(null);
   const submitCompanyRegistration = async (e) => {
     e.preventDefault();
-    const isAllowed = checkForError();
-    if (!policy) {
-      toast.error("Please search for a company first");
-      return;
-    }
-    if (apiData.contactPersons.length === 0) {
-      toast.error("Please add at least one contact person");
-      return;
-    }
-    if (apiData.policies.length === 0) {
-      toast.error("Please add at least one policy");
-      return;
-    }
-    if (apiData.companyBenefits.length === 0) {
-      toast.error("Please add at least one benefit");
-      return;
-    }
 
-    const basePayload  = {
+    const isAllowed = checkForError();
+
+    if (!policy) return toast.error("Please search for a company first");
+    if (apiData.contactPersons.length === 0)
+      return toast.error("Please add at least one contact person");
+    if (apiData.policies.length === 0)
+      return toast.error("Please add at least one policy");
+    if (apiData.companyBenefits.length === 0)
+      return toast.error("Please add at least one benefit");
+
+    const basePayload = {
       companyName: policy?.companyName,
       companyType: policy?.companyType,
       status: parseInt(apiData.status),
       clientCode: apiData.clientCode || policy?.clientCode,
       effectiveFrom: policy?.effectiveFrom,
       effectiveTo: policy?.effectiveTo,
-      address: policy?.address ,
+      address: policy?.address,
       contactNumber: policy?.contactNumber,
       email: policy?.email,
       website: policy?.website,
@@ -1064,51 +1050,56 @@ function CompanyRegistration() {
       contactPersons: apiData.contactPersons,
       companyBenefits: apiData.companyBenefits,
     };
-     const payload = updateCompany
-    ? { ...basePayload, id: updateCompany.id }
-    : basePayload;
+
+    const payload = updateCompany
+      ? { ...basePayload, id: updateCompany.id }
+      : basePayload;
+
     setDebugPayload(payload);
     console.log("Payload being sent:", payload);
 
-   
-
     try {
+      let res;
       if (updateCompany) {
-        const res = await updateCompanyData({
+        res = await updateCompanyData({
           endpoint: endpoints.Company.UpdateCompanyDetail,
           data: payload,
         });
-        if (res?.data?.success) {
-          toast.success("Company updated successfully!");
-          navigate("/CompanyManagment");
-        } else {
-          toast.error(res?.error?.data?.message || "Failed to update company");
+
+        if (res?.data) {
+          toast.success(res.data.message || "Company updated successfully!");
+          return navigate("/CompanyManagment");
         }
-      } else {
-        if (isAllowed) {
-          toast.error("Please fill all required fields correctly");
-          return;
-        }
-        // Create new company
-        const res = await addCompany({
-          endpoint: endpoints.Company.CreateCompany,
-          data: payload,
-        });
-        if (res?.data?.success) {
-          toast.success("Company created successfully!");
-          if (resetApiData) resetApiData();
-          setPolicy(null);
-          setClient(null);
-          setBenefitsTypeOptions([]);
-          navigate("/CompanyManagment");
-        } else {
-          toast.error(res?.error?.data?.message || "Failed to create company");
-        }
+
+        return toast.error(
+          res?.error?.data?.message || "Failed to update company"
+        );
       }
-    } catch (error) {
-      toast.error("An error occurred while saving the company");
+
+      if (isAllowed) {
+        return toast.error("Please fill all required fields correctly");
+      }
+
+      res = await addCompany({
+        endpoint: endpoints.Company.CreateCompany,
+        data: payload,
+      });
+
+      if (res?.data) {
+        toast.success(res.data.message || "Company created successfully!");
+        resetApiData?.();
+        setPolicy(null);
+        setClient(null);
+        setBenefitsTypeOptions([]);
+        return navigate("/CompanyManagment");
+      }
+
+      toast.error(res?.error?.data?.message || "Failed to create company");
+    } catch (err) {
+      toast.error("An unexpected error occurred");
     }
   };
+
 
   return (
     <div>
